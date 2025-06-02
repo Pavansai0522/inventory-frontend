@@ -27,39 +27,55 @@ function App() {
   }, []);
 
   const fetchItems = async () => {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    setItems(data);
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      setItems(data);
+    } catch (err) {
+      console.error('❌ Failed to fetch items:', err);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const item = { name, quantity: +quantity, price: +price };
+    const item = { name, quantity: Number(quantity), price: Number(price) };
 
-    if (editId !== null) {
-      await fetch(`${API_URL}/${editId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      });
-    } else {
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      });
+    try {
+      let res;
+      if (editId !== null) {
+        res = await fetch(`${API_URL}/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      } else {
+        res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      }
+
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+      const updated = await res.json();
+      setName('');
+      setQuantity('');
+      setPrice('');
+      setEditId(null);
+      fetchItems();
+    } catch (err) {
+      console.error('❌ Error submitting item:', err);
     }
-
-    setName('');
-    setQuantity('');
-    setPrice('');
-    setEditId(null);
-    fetchItems();
   };
 
   const handleDelete = async (id) => {
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    fetchItems();
+    try {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      fetchItems();
+    } catch (err) {
+      console.error('❌ Error deleting item:', err);
+    }
   };
 
   const handleEdit = (item) => {
