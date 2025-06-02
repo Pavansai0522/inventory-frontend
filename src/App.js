@@ -15,6 +15,8 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  const API_URL = 'https://inventory-backend.onrender.com/items';
+
   useEffect(() => {
     document.body.className = darkMode ? 'dark' : '';
     localStorage.setItem('theme', darkMode ? 'dark' : 'light');
@@ -25,7 +27,7 @@ function App() {
   }, []);
 
   const fetchItems = async () => {
-    const res = await fetch('http://localhost:4000/items');
+    const res = await fetch(API_URL);
     const data = await res.json();
     setItems(data);
   };
@@ -35,13 +37,13 @@ function App() {
     const item = { name, quantity: +quantity, price: +price };
 
     if (editId !== null) {
-      await fetch(`http://localhost:4000/items/${editId}`, {
+      await fetch(`${API_URL}/${editId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item)
       });
     } else {
-      await fetch('http://localhost:4000/items', {
+      await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item)
@@ -56,7 +58,7 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:4000/items/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
     fetchItems();
   };
 
