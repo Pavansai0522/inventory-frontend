@@ -15,7 +15,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const API_URL = 'https://inventory-backend.onrender.com/items';
+  const API_URL = 'https://inventory-backend-u0303.onrender.com/items';
 
   useEffect(() => {
     document.body.className = darkMode ? 'dark' : '';
