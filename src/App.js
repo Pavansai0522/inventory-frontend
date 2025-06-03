@@ -15,7 +15,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const API_BASE = 'https://inventory-backend-u303.onrender.com';
+  const API_URL = 'https://inventory-backend-bsqm.onrender.com/items';
 
   useEffect(() => {
     document.body.className = darkMode ? 'dark' : '';
@@ -28,7 +28,7 @@ function App() {
 
   const fetchItems = async () => {
     try {
-      const res = await fetch(`${API_BASE}/items`);
+      const res = await fetch(API_URL);
       const data = await res.json();
       setItems(data);
     } catch (err) {
@@ -41,24 +41,14 @@ function App() {
     const item = { name, quantity: Number(quantity), price: Number(price) };
 
     try {
-      let res;
-      if (editId !== null) {
-        res = await fetch(`${API_BASE}/items/${editId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item)
-        });
-      } else {
-        res = await fetch(`${API_BASE}/items`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item)
-        });
-      }
+      const res = await fetch(editId !== null ? `${API_URL}/${editId}` : API_URL, {
+        method: editId !== null ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item)
+      });
 
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
-      await res.json();
       setName('');
       setQuantity('');
       setPrice('');
@@ -71,7 +61,7 @@ function App() {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`${API_BASE}/items/${id}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
       fetchItems();
     } catch (err) {
       console.error('❌ Error deleting item:', err);
