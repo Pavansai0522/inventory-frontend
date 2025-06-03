@@ -58,7 +58,6 @@ function App() {
 
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
-      const updated = await res.json();
       setName('');
       setQuantity('');
       setPrice('');
